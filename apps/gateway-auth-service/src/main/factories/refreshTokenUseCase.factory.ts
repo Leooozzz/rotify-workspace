@@ -1,16 +1,14 @@
-import { SignInUseCase } from "../../application/use-cases/signInUseCase";
+import { RefreshTokenUseCase } from "../../application/use-cases/RefreshTokenUseCase";
 import { UsersRepository } from "../../infrastructure/database/repositories/UsersRepository";
 import { CompanyMembersRepository } from "../../infrastructure/database/repositories/CompanyMembersRepository";
-import { bcryptHashProvider } from "../../infrastructure/providers/hash/bcrypt";
 import { makeTokenProvider } from "./tokenProvider.factory";
 import { makeRefreshTokenProvider } from "./refreshTokenProvider.factory";
 
-export function makeSignInUseCase(): SignInUseCase {
-  return new SignInUseCase(
-    new UsersRepository(),
-    new bcryptHashProvider(),
-    makeTokenProvider(),
+export function makeRefreshTokenUseCase(): RefreshTokenUseCase {
+  return new RefreshTokenUseCase(
     makeRefreshTokenProvider(),
+    new UsersRepository(),
     new CompanyMembersRepository(),
+    makeTokenProvider(),
   );
 }

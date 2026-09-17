@@ -36,9 +36,22 @@ export class UsersRepository implements IUsersRepository {
     return toEntity(created);
   }
 
+  async findAll(): Promise<Users[]> {
+    const users = await prisma.user.findMany({ where: { deleted_at: null } });
+    return users.map((user) => toEntity(user));
+  }
+
   async findByEmail(email: string): Promise<Users | null> {
     const user = await prisma.user.findUnique({ where: { email } });
     return user ? toEntity(user) : null;
+  }
+
+  async findByCompanyId(companyId: string): Promise<Users[]> {
+    const members = await prisma.companyMember.findMany({
+      where: { companyId, user: { deleted_at: null } },
+      include: { user: true },
+    });
+    return members.map((member) => toEntity(member.user));
   }
 
   async findById(id: string): Promise<Users | null> {

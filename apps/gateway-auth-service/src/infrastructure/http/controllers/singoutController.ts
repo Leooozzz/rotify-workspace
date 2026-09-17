@@ -1,13 +1,15 @@
 import { RequestHandler } from "express";
-import { env } from "../../../config/env.config";
+import { REFRESH_COOKIE, clearAuthCookies } from "../cookies";
+import { makeRefreshTokenProvider } from "../../../main/factories/refreshTokenProvider.factory";
 
-export const singoutController: RequestHandler = (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-  });
+export const singoutController: RequestHandler = async (req, res) => {
+  const refreshToken = req.cookies?.[REFRESH_COOKIE];
+
+  if (refreshToken) {
+    await makeRefreshTokenProvider().revoke(refreshToken);
+  }
+
+  clearAuthCookies(res);
 
   return res.status(204).send();
 };

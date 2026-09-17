@@ -1,20 +1,29 @@
 import { sign, verify } from "jsonwebtoken";
-import { ITokenProvider } from "../../../application/providers/ITokenProvider";
+import {
+  ITokenPayload,
+  ITokenProvider,
+} from "../../../application/providers/ITokenProvider";
 import { env } from "../../../config/env.config";
 
-interface IPayload {
-  sub: string;
-}
-
 export class jwtTokenProvider implements ITokenProvider {
-  async generateToken(userId: string): Promise<string> {
-    return sign({ sub: userId }, env.JWT_SECRET, { expiresIn: "7d" });
+  async generateToken(payload: ITokenPayload): Promise<string> {
+    return sign(payload, env.JWT_SECRET, { expiresIn: "15m" });
   }
 
-  async validateToken(token: string): Promise<string | null> {
+  async validateToken(token: string): Promise<ITokenPayload | null> {
     try {
-      const { sub } = verify(token, env.JWT_SECRET) as IPayload;
-      return sub;
+      const decoded = verify(token, env.JWT_SECRET) as ITokenPayload;
+
+      if (!decoded.sub) {
+        return null;
+      }
+
+      return {
+        sub: decoded.sub,
+        role: decoded.role,
+        companyId: decoded.companyId ?? null,
+        companyRole: decoded.companyRole ?? null,
+      };
     } catch {
       return null;
     }
