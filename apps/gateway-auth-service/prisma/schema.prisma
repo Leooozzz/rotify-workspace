@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum role_user {
+  ADMIN
+  USER
+}
+
+enum role_company {
+  OWNER
+  MEMBER
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  password        String
+  name            String
+  profile_picture String?
+  role            role_user @default(USER)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  deleted_at      DateTime?
+
+  companyMembers CompanyMember[]
+}
+
+model Company {
+  id                  String    @id @default(uuid())
+  name                String    @unique
+  profile_pic_company String?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+  deleted_at          DateTime?
+
+  members CompanyMember[]
+}
+
+model CompanyMember {
+  id         String       @id @default(uuid())
+  userId     String
+  companyId  String
+  role       role_company @default(MEMBER)
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@unique([userId, companyId])
+}
