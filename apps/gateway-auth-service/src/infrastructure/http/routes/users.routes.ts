@@ -7,6 +7,7 @@ import { singoutController } from "../controllers/singoutController";
 import { refreshController } from "../controllers/refreshController";
 import { listUsersController } from "../controllers/listUsersController";
 import { listUserByCompanyIdController } from "../controllers/listUserByCompanyIdController";
+import { CreateUserController } from "../controllers/CreateUserController";
 
 const usersRoutes = Router();
 
@@ -18,5 +19,5 @@ usersRoutes.post("/signout", singoutController);
 usersRoutes.get("/me", ensureAuthenticated, meController);
 usersRoutes.get("/", ensureAuthenticated, listUsersController);
 usersRoutes.get("/:companyId",ensureAuthenticated,listUserByCompanyIdController)
-
+usersRoutes.post("/create-user",ensureAuthenticated,CreateUserController)
 export { usersRoutes };

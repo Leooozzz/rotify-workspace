@@ -35,6 +35,24 @@ function toMember(member: PrismaCompanyMember): CompanyMember {
 }
 
 export class CompanyMembersRepository implements ICompanyMembersRepository {
+  async create(member: CompanyMember): Promise<CompanyMember> {
+    if (!member.userId || !member.companyId) {
+      throw new Error(
+        "CompanyMembersRepository.create: userId and companyId are required",
+      );
+    }
+
+    const created = await prisma.companyMember.create({
+      data: {
+        userId: member.userId,
+        companyId: member.companyId,
+        role: member.role ?? "MEMBER",
+      },
+    });
+
+    return toMember(created);
+  }
+
   async findByUserId(userId: string): Promise<ICompanyMemberWithCompany | null> {
     const member = await prisma.companyMember.findFirst({
       where: { userId },

@@ -7,5 +7,6 @@ export interface ICompanyMemberWithCompany {
 }
 
 export interface ICompanyMembersRepository {
+  create(member: CompanyMember): Promise<CompanyMember>;
   findByUserId(userId: string): Promise<ICompanyMemberWithCompany | null>;
 }
