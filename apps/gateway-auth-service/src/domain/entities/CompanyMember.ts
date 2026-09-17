@@ -2,7 +2,7 @@ export class CompanyMember {
   id?: string;
   userId!: string;
   companyId!: string;
-  role?: "OWNER" | "USER";
+  role?: "OWNER" | "MEMBER";
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;

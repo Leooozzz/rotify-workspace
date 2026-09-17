@@ -8,7 +8,7 @@ export const meController: RequestHandler = async (req, res) => {
   }
 
   const getProfileUseCase = makeGetProfileUseCase();
-  const user = await getProfileUseCase.execute(req.userId);
+  const { user, company } = await getProfileUseCase.execute(req.userId);
 
   return res.status(200).json({
     id: user.id,
@@ -17,5 +17,6 @@ export const meController: RequestHandler = async (req, res) => {
     role: user.role,
     profile_picture: user.profile_picture ?? null,
     created_at: user.created_at,
+    company,
   });
 };
