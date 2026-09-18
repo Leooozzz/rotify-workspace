@@ -9,6 +9,7 @@ import { listUsersController } from "../controllers/listUsersController";
 import { listUserByCompanyIdController } from "../controllers/listUserByCompanyIdController";
 import { CreateUserController } from "../controllers/CreateUserController";
 import { CreateUserByCompanyIdController } from "../controllers/CreateUserByCompanyIdController";
+import { EditUserByUserIdController } from "../controllers/EditUserByUserIdController";
 
 const usersRoutes = Router();
 
@@ -22,4 +23,6 @@ usersRoutes.get("/", ensureAuthenticated, listUsersController);
 usersRoutes.get("/:companyId",ensureAuthenticated,listUserByCompanyIdController)
 usersRoutes.post("/create-user",ensureAuthenticated,CreateUserController)
 usersRoutes.post("/create-user/:companyId",ensureAuthenticated,CreateUserByCompanyIdController)
+usersRoutes.patch("/edit-user/:userId",ensureAuthenticated,EditUserByUserIdController)
+usersRoutes.delete("/delete-user/:userId")
 export { usersRoutes };
