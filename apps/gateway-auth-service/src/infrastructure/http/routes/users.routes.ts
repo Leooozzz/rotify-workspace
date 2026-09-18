@@ -8,6 +8,7 @@ import { refreshController } from "../controllers/refreshController";
 import { listUsersController } from "../controllers/listUsersController";
 import { listUserByCompanyIdController } from "../controllers/listUserByCompanyIdController";
 import { CreateUserController } from "../controllers/CreateUserController";
+import { CreateUserByCompanyIdController } from "../controllers/CreateUserByCompanyIdController";
 
 const usersRoutes = Router();
 
@@ -20,4 +21,5 @@ usersRoutes.get("/me", ensureAuthenticated, meController);
 usersRoutes.get("/", ensureAuthenticated, listUsersController);
 usersRoutes.get("/:companyId",ensureAuthenticated,listUserByCompanyIdController)
 usersRoutes.post("/create-user",ensureAuthenticated,CreateUserController)
+usersRoutes.post("/create-user/:companyId",ensureAuthenticated,CreateUserByCompanyIdController)
 export { usersRoutes };
