@@ -10,6 +10,7 @@ import { listUserByCompanyIdController } from "../controllers/listUserByCompanyI
 import { CreateUserController } from "../controllers/CreateUserController";
 import { CreateUserByCompanyIdController } from "../controllers/CreateUserByCompanyIdController";
 import { EditUserByUserIdController } from "../controllers/EditUserByUserIdController";
+import { DeleteUserByUserIdController } from "../controllers/DeleteUserByUserIdController";
 
 const usersRoutes = Router();
 
@@ -24,5 +25,5 @@ usersRoutes.get("/:companyId",ensureAuthenticated,listUserByCompanyIdController)
 usersRoutes.post("/create-user",ensureAuthenticated,CreateUserController)
 usersRoutes.post("/create-user/:companyId",ensureAuthenticated,CreateUserByCompanyIdController)
 usersRoutes.patch("/edit-user/:userId",ensureAuthenticated,EditUserByUserIdController)
-usersRoutes.delete("/delete-user/:userId")
+usersRoutes.delete("/delete-user/:userId", ensureAuthenticated, DeleteUserByUserIdController)
 export { usersRoutes };
