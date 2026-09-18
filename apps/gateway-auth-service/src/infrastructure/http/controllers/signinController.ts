@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { z } from "zod";
 import { makeSignInUseCase } from "../../../main/factories/signInUseCase.factory";
-import { env } from "../../../config/env.config";
+import { setAuthCookies } from "../cookies";
 
 const signinSchema = z.object({
     email: z.email("invalid email"),
@@ -21,15 +21,9 @@ export const signinController:RequestHandler = async (req, res) => {
     }
 
     const signinUseCase = makeSignInUseCase()
-    const { user, token } = await signinUseCase.execute(parsed.data)
+    const { user, accessToken, refreshToken } = await signinUseCase.execute(parsed.data)
 
-    res.cookie("token", token, {
-        httpOnly: true,
-        secure: env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
+    setAuthCookies(res, accessToken, refreshToken)
 
     return res.status(200).json({
         id: user.id,

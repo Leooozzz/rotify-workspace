@@ -1,6 +1,6 @@
 import type { User } from "../../../generated/prisma/client";
 import { Users } from "../../../domain/entities/Users";
-import { IUsersRepository } from "../../../domain/repositories/IUsersRepository";
+import { IUpdateUserData, IUsersRepository } from "../../../domain/repositories/IUsersRepository";
 import { prisma } from "../prisma/PrismaClient";
 
 function toEntity(user: User): Users {
@@ -36,9 +36,22 @@ export class UsersRepository implements IUsersRepository {
     return toEntity(created);
   }
 
+  async findAll(): Promise<Users[]> {
+    const users = await prisma.user.findMany({ where: { deleted_at: null } });
+    return users.map((user) => toEntity(user));
+  }
+
   async findByEmail(email: string): Promise<Users | null> {
     const user = await prisma.user.findUnique({ where: { email } });
     return user ? toEntity(user) : null;
+  }
+
+  async findByCompanyId(companyId: string): Promise<Users[]> {
+    const members = await prisma.companyMember.findMany({
+      where: { companyId, user: { deleted_at: null } },
+      include: { user: true },
+    });
+    return members.map((member) => toEntity(member.user));
   }
 
   async findById(id: string): Promise<Users | null> {
@@ -46,9 +59,25 @@ export class UsersRepository implements IUsersRepository {
     return user ? toEntity(user) : null;
   }
 
-  async editById(id: string): Promise<Users | null> {
-    const user = await prisma.user.findUnique({ where: { id } });
-    return user ? toEntity(user) : null;
+  async editById(id: string, data: IUpdateUserData): Promise<Users | null> {
+    const existing = await prisma.user.findUnique({ where: { id } });
+    if (!existing) {
+      return null;
+    }
+
+    const updated = await prisma.user.update({
+      where: { id },
+      data: {
+        ...(data.name !== undefined ? { name: data.name } : {}),
+        ...(data.email !== undefined ? { email: data.email } : {}),
+        ...(data.password !== undefined ? { password: data.password } : {}),
+        ...(data.profile_picture !== undefined
+          ? { profile_picture: data.profile_picture }
+          : {}),
+      },
+    });
+
+    return toEntity(updated);
   }
 
   async deleteUser(id: string): Promise<Users | null> {

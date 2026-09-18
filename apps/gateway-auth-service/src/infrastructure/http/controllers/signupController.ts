@@ -6,7 +6,6 @@ const signUpBodySchema = z.object({
   name: z.string().trim().min(1, "name is required"),
   email: z.email("invalid email"),
   password: z.string().min(6, "password must have at least 6 characters"),
-  role: z.enum(["ADMIN", "USER"]).optional(),
   profile_picture: z.url().optional(),
 });
 
