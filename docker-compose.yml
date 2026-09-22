@@ -12,6 +12,19 @@ services:
       - pgdata_gateway:/var/lib/postgresql/data
     restart: always
 
+  postgres-orders:
+    image: postgres:15-alpine
+    container_name: rotify_postgres_orders
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: rootpassword
+      POSTGRES_DB: orders_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_orders:/var/lib/postgresql/data
+    restart: always
+
   redis:
     image: redis:7-alpine
     container_name: rotify_redis
@@ -26,7 +39,7 @@ services:
       RABBITMQ_DEFAULT_USER: root
       RABBITMQ_DEFAULT_PASS: rootpassword
     ports:
-      - "5672:5672"  
+      - "5672:5672"
       - "15672:15672"
     restart: always
 
@@ -44,10 +57,32 @@ services:
       PORT: 3001
       REDIS_HOST: "redis"
       REDIS_PORT: 6379
+      ORDERS_SERVICE: "http://orders-service:3002"
     depends_on:
       - postgres-gateway
+      - redis
+      - orders-service
+    restart: always
+
+  orders-service:
+    build:
+      context: ./apps/orders-service
+      dockerfile: Dockerfile
+    container_name: rotify_orders_service
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://root:rootpassword@postgres-orders:5432/orders_db?schema=public"
+      PORT: 3002
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      VERSION_API: "v1"
+    depends_on:
+      - postgres-orders
       - redis
     restart: always
 
 volumes:
   pgdata_gateway:
+  pgdata_orders:
