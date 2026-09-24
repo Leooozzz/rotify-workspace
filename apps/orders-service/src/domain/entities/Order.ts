@@ -1,3 +1,6 @@
+import { OrderAlreadyDeliveredError } from "../errors/OrderAlreadyDeliveredError";
+import { OrderAlreadyReadyError } from "../errors/OrderAlreadyReadyError";
+
 export type OrderStatus = 'PENDING' | 'READY_FOR_DISPATCH' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELED';
 
 export interface OrderProps {
@@ -38,14 +41,14 @@ export class Order {
 
   public markAsReady(): void {
     if (this.status !== 'PENDING') {
-      throw new Error('Apenas pedidos pendentes podem ser marcados como prontos para despacho.');
+      throw new OrderAlreadyReadyError();
     }
     this.status = 'READY_FOR_DISPATCH';
   }
 
   public cancel(): void {
     if (this.status === 'DELIVERED') {
-      throw new Error('Pedidos já entregues não podem ser cancelados.');
+      throw new OrderAlreadyDeliveredError();
     }
     this.status = 'CANCELED';
   }

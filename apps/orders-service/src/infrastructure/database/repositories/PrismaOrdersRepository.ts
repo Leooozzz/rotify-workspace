@@ -1,6 +1,8 @@
 import { Order } from "../../../domain/entities/Order";
 import { IOrdersRepository } from "../../../domain/repositories/IOrdersRepository";
 import { prisma } from "../prisma/PrismaClient";
+import { OrderNotFoundError } from "../../../domain/errors/OrderNotFoundError";
+import { InvalidOrderDataError } from "../../../domain/errors/InvalidOrderDataError";
 
 export class PrismaOrdersRepository implements IOrdersRepository { 
     async create(order: Order): Promise<Order> {
@@ -22,7 +24,7 @@ export class PrismaOrdersRepository implements IOrdersRepository {
             where:{id}
         })
         if(!order){
-            throw new Error("Order not found")
+            throw new OrderNotFoundError()
         }
         return new Order(order as Order,order.id) 
     }
@@ -35,13 +37,13 @@ export class PrismaOrdersRepository implements IOrdersRepository {
             where:{trackingCode}
         })
         if(!order){
-            throw new Error("Order not found")
+            throw new OrderNotFoundError()
         }
         return new Order(order as Order,order.id) 
     }
     async save(order: Order): Promise<Order> {
     if(!order.id){
-        throw new Error("order id is required")
+        throw new InvalidOrderDataError("order id is required")
     }
     const updatedOrder = await prisma.order.update({
       where: { id: order.id },
