@@ -30,7 +30,7 @@ export class PrismaOrdersRepository implements IOrdersRepository {
     }
     async findByCompanyId(companyId: string): Promise<Order[]> {
     const orders = await prisma.order.findMany({ where: { companyId } });
-    return orders.map(order => new Order(order as any, order.id));
+    return orders.map(order => new Order(order as Order, order.id));
     }
     async findByTackingCode(trackingCode: string): Promise<Order | null> {
            const order = await prisma.order.findUnique({

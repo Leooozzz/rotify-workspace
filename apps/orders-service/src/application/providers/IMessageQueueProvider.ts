@@ -1,4 +1,4 @@
 export interface IMessageQueueProvider {
   
-  publish(queueName: string, payload: any): Promise<void>;
+  publish<T>(queueName: string, payload: T): Promise<void>;
 }

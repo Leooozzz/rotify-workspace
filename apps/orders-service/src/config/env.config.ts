@@ -10,6 +10,7 @@ const envSchema = z.object({
   REDIS_HOST: z.string().min(1).default("localhost"),
   REDIS_PORT: z.coerce.number().int().min(1).max(65535).default(6379),
   VERSION_API: z.string().min(1).default("v1"),
+  RABBITMQ_URL: z.string().min(1, "RABBITMQ_URL is required"),
 });
 
 export const env = envSchema.parse(process.env);
